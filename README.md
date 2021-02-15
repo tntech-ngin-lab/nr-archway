@@ -28,24 +28,28 @@ There are 3 parts to this small NDN network The catalog, the repo, and the clien
 Each part should be ran on a different terminal.
 
 The Catalog
-	1. navigate to /catalog
-	2. run " python3 catalog.py "
+
+1. navigate to /catalog
+2. run " python3 catalog.py "
 
 The Repo
-	1. navigate to /repo/ndn_python_repo/cmd
-	2. run " python3 main.py "
+
+1. navigate to /repo/ndn_python_repo/cmd
+2. run " python3 main.py "
 
 The Client
-	1. make sure both catalog and repo are running
-	2. navigate to /repo/examples
-	3. run " python3 getfile -r "testName" -n "insertname" "
-	4. make sure insertname is a valid name in /catalog/input_table.dat
+
+1. make sure both catalog and repo are running
+2. navigate to /repo/examples
+3. run " python3 getfile -r "testName" -n "insertname" "
+4. make sure insertname is a valid name in /catalog/input_table.dat
 
 ### Compare
 
 To compare this architecture, you can use the following script:
-	1. navigate to /straight
-	2. run " python3 straight.py "
+
+1. navigate to /straight
+2. run " python3 straight.py "
 
 ## License and Authors
 
