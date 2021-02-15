@@ -23,7 +23,7 @@ Methods:
 
 * sftp
 
-There are 3 parts to what I am working on. The catalog, the repo, and the client.
+There are 3 parts to this small NDN network The catalog, the repo, and the client.
 
 Each part should be ran on a different terminal.
 
