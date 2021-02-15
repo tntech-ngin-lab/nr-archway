@@ -1,0 +1,20 @@
+/CORBIN/SIZEFILES/KB-500
+curl -L ftp://atmos-nwsc.ucar.edu/home/corbin/sizefiles/KB_500.bin -o KB_500_FILE
+/CORBIN/SIZEFILES/GB-1
+curl -L ftp://atmos-nwsc.ucar.edu/home/corbin/sizefiles/GB_1.bin -o GB_1_FILE
+/CORBIN/SIZEFILES/MB-1
+curl -L ftp://atmos-nwsc.ucar.edu/home/corbin/sizefiles/MB_1.bin -o MB_1_FILE
+/CORBIN/SIZEFILES/MB-5
+curl -L ftp://atmos-nwsc.ucar.edu/home/corbin/sizefiles/MB_5.bin -o MB_5_FILE
+/CORBIN/SIZEFILES/MB-10
+curl -L ftp://atmos-nwsc.ucar.edu/home/corbin/sizefiles/MB_10.bin -o MB_10_FILE
+/CORBIN/SIZEFILES/MB-25
+curl -L ftp://atmos-nwsc.ucar.edu/home/corbin/sizefiles/MB_25.bin -o MB_25_FILE
+/CORBIN/SIZEFILES/MB-50
+curl -L ftp://atmos-nwsc.ucar.edu/home/corbin/sizefiles/MB_50.bin -o MB_50_FILE
+/CORBIN/SIZEFILES/MB-100
+curl -L ftp://atmos-nwsc.ucar.edu/home/corbin/sizefiles/MB_100.bin -o MB_100_FILE
+/CORBIN/SIZEFILES/MB-250
+curl -L ftp://atmos-nwsc.ucar.edu/home/corbin/sizefiles/MB_250.bin -o MB_250_FILE
+/CORBIN/SIZEFILES/MB-500
+curl -L ftp://atmos-nwsc.ucar.edu/home/corbin/sizefiles/MB_500.bin -o MB_500_FILE
