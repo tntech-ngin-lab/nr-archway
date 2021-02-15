@@ -1,4 +1,0 @@
-sphinx-rtd-theme>=0.4.3
-sphinx-autodoc-typehints==1.10.3
-pycryptodomex>=3.8.2
-pygtrie>=2.3.2
