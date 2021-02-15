@@ -1,4 +1,4 @@
-python-ndn-catalog + python-ndn-repo
+python-python-fserver: A NDN File Server Proxy 
 ==========
 
 A Named Data Network consisting of a Repo and a Catalog using python.
