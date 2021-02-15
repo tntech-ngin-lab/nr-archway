@@ -27,17 +27,17 @@ There are 3 parts to this small NDN network The catalog, the repo, and the clien
 
 Each part should be ran on a different terminal.
 
-The Catalog
+**The Catalog**
 
 1. navigate to /catalog
 2. run " python3 catalog.py "
 
-The Repo
+**The Repo**
 
 1. navigate to /repo/ndn_python_repo/cmd
 2. run " python3 main.py "
 
-The Client
+**The Client**
 
 1. make sure both catalog and repo are running
 2. navigate to /repo/examples
