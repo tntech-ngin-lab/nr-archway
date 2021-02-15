@@ -21,7 +21,7 @@ There are different branches associated to this repository. The different branch
 
 Methods:
 
-* sftp
+* [sftp](https://github.com/justincpresley/ndn-python-fserver/tree/sftp)
 
 There are 3 parts to this small NDN network The catalog, the repo, and the client.
 
