@@ -1,30 +1,57 @@
-python-python-fserver: A NDN Network - File Server Proxy 
+python-python-fserver: A small NDN Network - File Server Proxy in Python
 ==========
 
-A Named Data Network consisting of a Repo and a Catalog using python.
+This is a Small Named Data Networking Network consisting of a Repo and a Catalog implemented in python. It is designed to compare the speed of the new proposed architecture, NDN, to the current architecture IP. More specifically, how NDN could be utilized to improve file transfers from a file server using different methods.
 
-It supports Python >=3.6 and PyPy3 >=7.1.1.
+> This is NOT an official implementation and consider 'experimental'.
 
-Please see both python-ndn github documentations if you have any issues.
+ndn-python-fserver uses the [python-ndn](https://github.com/named-data/python-ndn) library and the [python-ndn-repo](https://github.com/UCLA-IRL/ndn-python-repo) for it's implementation. All credit for the repo itself and the python ndn API should be rightfully given to the correct authors.
 
-Catalog : https://github.com/zjkmxy/python-ndn
-Repo    : https://github.com/JonnyKong/ndn-python-repo
+## Installation
 
+### Prerequisites
 
-HOW TO RUN:
-	There are 3 parts to what I am working on. The catalog, the repo, and the client.
-	Each part should be ran on a different terminal.
+* [python-ndn](https://python-ndn.readthedocs.io/en/latest/src/installation.html)
 
-	The Catalog
-		1. navigate to /catalog/examples
-		2. run " python3 catalog.py "
+* [nfd](https://named-data.net/doc/NFD/0.5.0/INSTALL.html)
 
-	The Repo
-		1. navigate to /repo/ndn_python_repo/cmd
-		2. run " python3 main.py "
+### Examples
 
-	The Client
-		1. make sure both catalog and repo are running
-		2. navigate to /repo/examples
-		3. run " python3 getfile -r "testName" -n "insertname" "
-		4. make sure insertname is a valid name in /catalog/examples/input_table.dat
+There are different branches associated to this repository. The different branches correspond to the different methods of file transfering.
+
+Methods:
+
+* sftp
+
+There are 3 parts to what I am working on. The catalog, the repo, and the client.
+
+Each part should be ran on a different terminal.
+
+The Catalog
+	1. navigate to /catalog
+	2. run " python3 catalog.py "
+
+The Repo
+	1. navigate to /repo/ndn_python_repo/cmd
+	2. run " python3 main.py "
+
+The Client
+	1. make sure both catalog and repo are running
+	2. navigate to /repo/examples
+	3. run " python3 getfile -r "testName" -n "insertname" "
+	4. make sure insertname is a valid name in /catalog/input_table.dat
+
+### Compare
+
+To compare this architecture, you can use the following script:
+	1. navigate to /straight
+	2. run " python3 straight.py "
+
+## License and Authors
+
+ndn-python-fserver is an open source project that is licensed. See [`LICENSE.md`](LICENSE.md) for more information.
+
+The Names of all authors associated with this project (excluding the ndn repo implementation and the ndn api) are below:
+
+  * *Justin C Presley* (justincpresley)
+	
