@@ -1,0 +1,5 @@
+## Add this to ~/.ssh/config or copy this to that location. ##
+Host ndn-fserv
+    ## Put address following HostName. ##
+    HostName address
+
