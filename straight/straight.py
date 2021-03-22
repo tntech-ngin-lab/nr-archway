@@ -8,7 +8,7 @@ def main():
     args = vars(parser.parse_args())
 
     start = time.time()
-    downproc = subprocess.Popen("sftp atmos-nwsc.ucar.edu:/home/corbin/sizefiles/"+args["name"],shell=True)
+    downproc = subprocess.Popen("sftp ndn-fserv:/home/corbin/sizefiles/"+args["name"],shell=True)
     while downproc.poll() is None:
         time.sleep(0.001)
     print(f'Total time: {time.time() - start} seconds')
