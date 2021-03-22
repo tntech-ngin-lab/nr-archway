@@ -17,7 +17,7 @@ ndn-python-fserver uses the [python-ndn](https://github.com/named-data/python-nd
 
 ### Examples
 
-There are different branches associated to this repository. The different branches correspond to the different methods of file transfering.
+There are different branches associated to this repository. The different branches correspond to the different methods of file transfering. Please fill out the ssh_config with the appropriate address of the file server and add that naming before continuing.
 
 Methods:
 
