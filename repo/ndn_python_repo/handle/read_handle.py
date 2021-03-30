@@ -172,29 +172,30 @@ class ReadHandle(object):
             lp_packet = make_network_nack(interest, NackReason.NONE) #network nack
 
             if Component.to_str(int_name[-1])=="seg=0":
-                ftp_command = await self._request_from_catalog(int_name)
-                self.curr_file_requests[Name.to_str(int_name[:-1])] = {}
-                self.curr_file_requests[Name.to_str(int_name[:-1])]["curlcommand"] = ftp_command.decode()
-                if self.curr_file_requests[Name.to_str(int_name[:-1])]["curlcommand"]!="None":
-                    logging.info(f'Read handle: setting up var current_file_requests')
-                    curl_parts = self.curr_file_requests[Name.to_str(int_name[:-1])]["curlcommand"].split(' ')
-                    link = curl_parts[-3]
-                    link_parts = link.split('/')
+                if Name.to_str(int_name[:-1]) not in self.curr_file_requests:
+                    ftp_command = await self._request_from_catalog(int_name)
+                    self.curr_file_requests[Name.to_str(int_name[:-1])] = {}
+                    self.curr_file_requests[Name.to_str(int_name[:-1])]["curlcommand"] = ftp_command.decode()
+                    if self.curr_file_requests[Name.to_str(int_name[:-1])]["curlcommand"]!="None":
+                        logging.info(f'Read handle: setting up var current_file_requests')
+                        curl_parts = self.curr_file_requests[Name.to_str(int_name[:-1])]["curlcommand"].split(' ')
+                        link = curl_parts[-3]
+                        link_parts = link.split('/')
 
-                    self.curr_file_requests[Name.to_str(int_name[:-1])]["outputfile"] = curl_parts[-1]
-                    self.curr_file_requests[Name.to_str(int_name[:-1])]["srcdir"] = '/' + '/'.join(link_parts[3:])
-                    self.curr_file_requests[Name.to_str(int_name[:-1])]["server"] = link_parts[2]
-                    self.curr_file_requests[Name.to_str(int_name[:-1])]["downloading"] = False
-                    self.curr_file_requests[Name.to_str(int_name[:-1])]["downloaded"] = False
-                    self.curr_file_requests[Name.to_str(int_name[:-1])]["size"] = await self._get_server_file_size(int_name)
-                    self.curr_file_requests[Name.to_str(int_name[:-1])]["numsegments"] = self._how_many_segments(self.curr_file_requests[Name.to_str(int_name[:-1])]["size"], self.segment_size)
+                        self.curr_file_requests[Name.to_str(int_name[:-1])]["outputfile"] = curl_parts[-1]
+                        self.curr_file_requests[Name.to_str(int_name[:-1])]["srcdir"] = '/' + '/'.join(link_parts[3:])
+                        self.curr_file_requests[Name.to_str(int_name[:-1])]["server"] = link_parts[2]
+                        self.curr_file_requests[Name.to_str(int_name[:-1])]["downloading"] = False
+                        self.curr_file_requests[Name.to_str(int_name[:-1])]["downloaded"] = False
+                        self.curr_file_requests[Name.to_str(int_name[:-1])]["size"] = await self._get_server_file_size(int_name)
+                        self.curr_file_requests[Name.to_str(int_name[:-1])]["numsegments"] = self._how_many_segments(self.curr_file_requests[Name.to_str(int_name[:-1])]["size"], self.segment_size)
 
-                    await self._download_file(int_name)
-                    await self._upload_storage_file(int_name)
-                else:
-                    self.app.put_raw_packet(lp_packet)
+                        await self._download_file(int_name)
+                        await self._upload_storage_file(int_name)
+                    else:
+                        self.app.put_raw_packet(lp_packet)
 
-                self.curr_file_requests.pop(Name.to_str(int_name[:-1]))
+                    self.curr_file_requests.pop(Name.to_str(int_name[:-1]))
             else:
                 await self._get_memory_segment(int_name)
         logging.info(f'Serve Data: {Name.to_str(int_name)}')
