@@ -119,7 +119,7 @@ class ReadHandle(object):
                 break
 
 
-        if self.curr_file_requests[Name.to_str(int_name[:-1])]["uploading"] == True:
+        if self.curr_file_requests[Name.to_str(int_name[:-1])]["uploading"] == True or self.curr_file_requests[Name.to_str(int_name[:-1])]["uploaded"] == True:
             return
         logging.info(f'Read handle: getting {segment} out of {self.curr_file_requests[Name.to_str(int_name[:-1])]["numsegments"]-1} data')
 
@@ -152,6 +152,7 @@ class ReadHandle(object):
 
         logging.info(f'Read handle: uploaded {self.curr_file_requests[Name.to_str(int_name[:-1])]["outputfile"]} to storage')
         self.curr_file_requests[Name.to_str(int_name[:-1])]["uploading"] = False
+        self.curr_file_requests[Name.to_str(int_name[:-1])]["uploaded"] = True
         await aio.sleep(10)
         if os.path.exists(self.curr_file_requests[Name.to_str(int_name[:-1])]["outputfile"]):
             os.remove(self.curr_file_requests[Name.to_str(int_name[:-1])]["outputfile"])
@@ -193,6 +194,7 @@ class ReadHandle(object):
                         self.curr_file_requests[Name.to_str(int_name[:-1])]["downloading"] = False
                         self.curr_file_requests[Name.to_str(int_name[:-1])]["downloaded"] = False
                         self.curr_file_requests[Name.to_str(int_name[:-1])]["uploading"] = False
+                        self.curr_file_requests[Name.to_str(int_name[:-1])]["uploaded"] = False
                         self.curr_file_requests[Name.to_str(int_name[:-1])]["size"] = await self._get_server_file_size(int_name)
                         self.curr_file_requests[Name.to_str(int_name[:-1])]["numsegments"] = self._how_many_segments(self.curr_file_requests[Name.to_str(int_name[:-1])]["size"], self.segment_size)
 
