@@ -125,6 +125,9 @@ class ReadHandle(object):
                             await aio.sleep(0)
                         memory = self._read_memory_segment(self.curr_file_requests[Name.to_str(int_name[:-1])]["outputfile"], self.segment_size, segment)
 
+                    if self.curr_file_requests[Name.to_str(int_name[:-1])]["uploaded"]:
+                        return
+
                     final_id = Component.from_number(self.curr_file_requests[Name.to_str(int_name[:-1])]["numsegments"]-1, Component.TYPE_SEGMENT)
                     self.app.put_data(int_name, content=memory, freshness_period=None, final_block_id=final_id)
                 except:
@@ -137,16 +140,13 @@ class ReadHandle(object):
         logging.info(f'Read handle: creating upload client')
         client = PutfileClient(app=self.app, prefix=Name.from_str(self.repo_name), repo_name=Name.from_str(self.repo_name))
         logging.info(f'Read handle: uploading {self.curr_file_requests[Name.to_str(int_name[:-1])]["outputfile"]} to storage')
-        self.curr_file_requests[Name.to_str(int_name[:-1])]["uploading"] = True
         await client.insert_file(self.curr_file_requests[Name.to_str(int_name[:-1])]["outputfile"],
                                 name_at_repo=int_name[:-1],
                                 segment_size=self.segment_size,
                                 freshness_period=0,
                                 cpu_count=os.cpu_count())
-
-        logging.info(f'Read handle: uploaded {self.curr_file_requests[Name.to_str(int_name[:-1])]["outputfile"]} to storage')
-        self.curr_file_requests[Name.to_str(int_name[:-1])]["uploading"] = False
         self.curr_file_requests[Name.to_str(int_name[:-1])]["uploaded"] = True
+        logging.info(f'Read handle: uploaded {self.curr_file_requests[Name.to_str(int_name[:-1])]["outputfile"]} to storage')
         await aio.sleep(10)
         if os.path.exists(self.curr_file_requests[Name.to_str(int_name[:-1])]["outputfile"]):
             os.remove(self.curr_file_requests[Name.to_str(int_name[:-1])]["outputfile"])
@@ -187,9 +187,7 @@ class ReadHandle(object):
                         self.curr_file_requests[Name.to_str(int_name[:-1])]["server"] = link_parts[2]
                         self.curr_file_requests[Name.to_str(int_name[:-1])]["downloading"] = False
                         self.curr_file_requests[Name.to_str(int_name[:-1])]["downloaded"] = False
-                        self.curr_file_requests[Name.to_str(int_name[:-1])]["uploading"] = False
                         self.curr_file_requests[Name.to_str(int_name[:-1])]["uploaded"] = False
-                        self.curr_file_requests[Name.to_str(int_name[:-1])]["worksegments"] = []
                         self.curr_file_requests[Name.to_str(int_name[:-1])]["size"] = await self._get_server_file_size(int_name)
                         self.curr_file_requests[Name.to_str(int_name[:-1])]["numsegments"] = self._how_many_segments(self.curr_file_requests[Name.to_str(int_name[:-1])]["size"], self.segment_size)
 
