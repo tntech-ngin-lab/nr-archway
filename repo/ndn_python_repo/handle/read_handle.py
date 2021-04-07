@@ -104,41 +104,35 @@ class ReadHandle(object):
         self.curr_file_requests[Name.to_str(int_name[:-1])]["downloaded"] = True
     async def _get_memory_segment(self, int_name):
         segment = int(Component.to_str(int_name[-1])[4:])
-        while True:
-            if Name.to_str(int_name[:-1]) in self.curr_file_requests.keys():
-                if "numsegments" in self.curr_file_requests[Name.to_str(int_name[:-1])].keys():
-                    break
-                else:
+        if Name.to_str(int_name[:-1]) in self.curr_file_requests.keys():
+            if "numsegments" in self.curr_file_requests[Name.to_str(int_name[:-1])].keys():
+                while not os.path.exists(self.curr_file_requests[Name.to_str(int_name[:-1])]["outputfile"]):
                     await aio.sleep(0)
+                    if self.curr_file_requests[Name.to_str(int_name[:-1])]["downloaded"]:
+                        return
+
+                logging.info(f'Read handle: getting {segment} out of {self.curr_file_requests[Name.to_str(int_name[:-1])]["numsegments"]-1} data')
+
+                try:
+                    if segment != self.curr_file_requests[Name.to_str(int_name[:-1])]["numsegments"]-1:
+                        current_file_size = self._get_current_file_size(self.curr_file_requests[Name.to_str(int_name[:-1])]["outputfile"])
+                        while current_file_size<((segment*self.segment_size)+1):
+                            await aio.sleep(0)
+                            current_file_size = self._get_current_file_size(self.curr_file_requests[Name.to_str(int_name[:-1])]["outputfile"])
+                        memory = self._read_memory_segment(self.curr_file_requests[Name.to_str(int_name[:-1])]["outputfile"], self.segment_size, segment)
+                    else:
+                        while self.curr_file_requests[Name.to_str(int_name[:-1])]["downloaded"] == False:
+                            await aio.sleep(0)
+                        memory = self._read_memory_segment(self.curr_file_requests[Name.to_str(int_name[:-1])]["outputfile"], self.segment_size, segment)
+
+                    final_id = Component.from_number(self.curr_file_requests[Name.to_str(int_name[:-1])]["numsegments"]-1, Component.TYPE_SEGMENT)
+                    self.app.put_data(int_name, content=memory, freshness_period=None, final_block_id=final_id)
+                except:
+                    return
             else:
-                await aio.sleep(0)
-
-        while not os.path.exists(self.curr_file_requests[Name.to_str(int_name[:-1])]["outputfile"]):
-            await aio.sleep(0)
-            if self.curr_file_requests[Name.to_str(int_name[:-1])]["downloaded"]:
-                break
-
-
-        if self.curr_file_requests[Name.to_str(int_name[:-1])]["uploading"] == True or self.curr_file_requests[Name.to_str(int_name[:-1])]["uploaded"] == True:
+                return
+        else:
             return
-        logging.info(f'Read handle: getting {segment} out of {self.curr_file_requests[Name.to_str(int_name[:-1])]["numsegments"]-1} data')
-
-        try:
-            if segment != self.curr_file_requests[Name.to_str(int_name[:-1])]["numsegments"]-1:
-                current_file_size = self._get_current_file_size(self.curr_file_requests[Name.to_str(int_name[:-1])]["outputfile"])
-                while current_file_size<((segment*self.segment_size)+1):
-                    await aio.sleep(0)
-                    current_file_size = self._get_current_file_size(self.curr_file_requests[Name.to_str(int_name[:-1])]["outputfile"])
-                memory = self._read_memory_segment(self.curr_file_requests[Name.to_str(int_name[:-1])]["outputfile"], self.segment_size, segment)
-            else:
-                while self.curr_file_requests[Name.to_str(int_name[:-1])]["downloaded"] == False:
-                    await aio.sleep(0)
-                memory = self._read_memory_segment(self.curr_file_requests[Name.to_str(int_name[:-1])]["outputfile"], self.segment_size, segment)
-        except:
-            return
-
-        final_id = Component.from_number(self.curr_file_requests[Name.to_str(int_name[:-1])]["numsegments"]-1, Component.TYPE_SEGMENT)
-        self.app.put_data(int_name, content=memory, freshness_period=None, final_block_id=final_id)
     async def _upload_storage_file(self, int_name):
         logging.info(f'Read handle: creating upload client')
         client = PutfileClient(app=self.app, prefix=Name.from_str(self.repo_name), repo_name=Name.from_str(self.repo_name))
@@ -195,6 +189,7 @@ class ReadHandle(object):
                         self.curr_file_requests[Name.to_str(int_name[:-1])]["downloaded"] = False
                         self.curr_file_requests[Name.to_str(int_name[:-1])]["uploading"] = False
                         self.curr_file_requests[Name.to_str(int_name[:-1])]["uploaded"] = False
+                        self.curr_file_requests[Name.to_str(int_name[:-1])]["worksegments"] = []
                         self.curr_file_requests[Name.to_str(int_name[:-1])]["size"] = await self._get_server_file_size(int_name)
                         self.curr_file_requests[Name.to_str(int_name[:-1])]["numsegments"] = self._how_many_segments(self.curr_file_requests[Name.to_str(int_name[:-1])]["size"], self.segment_size)
 
