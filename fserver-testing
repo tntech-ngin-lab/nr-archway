@@ -1,8 +1,8 @@
 some_cmd > some_file 2>&1 &
 
 CLIENT
-nfdc face create udp://10.138.0.3
-nfdc route add / udp://10.138.0.3
+nfdc face create udp://REPO_IP
+nfdc route add / udp://REPO_IP
 
 REPO
 
