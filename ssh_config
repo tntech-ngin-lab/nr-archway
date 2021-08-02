@@ -1,5 +1,6 @@
+## Do this for all NDN nodes and all NDN clients. ##
 ## Add this to ~/.ssh/config or copy this to that location. ##
 Host ndn-fserv
-    ## Put address following HostName. ##
-    HostName address
+    ## Put address (in place of ADDR) of the file server following HostName. ##
+    HostName ADDR
 

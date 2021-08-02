@@ -1,11 +1,9 @@
-python-python-fserver: A small NDN Network - File Server Proxy in Python
+nr-archway: A bridge between NDN and IP
 ==========
 
-This is a Small Named Data Networking Network consisting of a Repo and a Catalog implemented in python. It is designed to compare the speed of the new proposed architecture, NDN, to the current architecture IP. More specifically, how NDN could be utilized to improve file transfers from a file server using different methods.
+This is a Small Named Data Networking Network consisting of a Repo and a Catalog implemented in python. It is designed to conjoin two architectures, the future proposed architecture NDN with the current architecture IP. It's main object is to show how NDN could be utilized in a practical sense and start being used in the consumer market.
 
-> This is NOT an official implementation and consider 'experimental'.
-
-ndn-python-fserver uses the [python-ndn](https://github.com/named-data/python-ndn) library and the [python-ndn-repo](https://github.com/UCLA-IRL/ndn-python-repo) for it's implementation. All credit for the repo itself and the python ndn API should be rightfully given to the correct authors.
+nr-archway uses the [python-ndn](https://github.com/named-data/python-ndn) library and the [python-ndn-repo](https://github.com/UCLA-IRL/ndn-python-repo) for it's implementation. All credit for the repo itself and the python ndn API should be rightfully given to the correct authors.
 
 ## Installation
 
@@ -17,13 +15,14 @@ ndn-python-fserver uses the [python-ndn](https://github.com/named-data/python-nd
 
 ### Examples
 
-There are different branches associated to this repository. The different branches correspond to the different methods of file transfering. Please fill out the ssh_config with the appropriate address of the file server and add that naming before continuing.
+There are different branches associated to this repository. The different branches correspond to the different methods of file transferring.
 
 Methods:
 
 * [sftp](https://github.com/justincpresley/ndn-python-fserver/tree/sftp)
 
-There are 3 parts to this small NDN network The catalog, the repo, and the client.
+There are 3 parts to this small NDN network The catalog, the repo, and the client. All need to have each other's
+public key. Also, fill out the ssh_config with the appropriate address of the file server and add that naming to the repo's config before continuing.
 
 Each part should be ran on a different terminal.
 
@@ -53,9 +52,9 @@ To compare this architecture, you can use the following script:
 
 ## License and Authors
 
-ndn-python-fserver is an open source project that is licensed. See [`LICENSE.md`](LICENSE.md) for more information.
+nr-archway is an open source project that is licensed. See [`LICENSE.md`](LICENSE.md) for more information.
 
 The Names of all authors associated with this project (excluding the ndn repo implementation and the ndn api) are below:
 
   * *Justin C Presley* (justincpresley)
-	
+

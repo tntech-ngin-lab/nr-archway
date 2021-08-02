@@ -2,12 +2,12 @@ some_cmd > some_file 2>&1 &
 
 CLIENT
 nfdc face create udp://10.138.0.3
-nfdc route add /CORBIN udp://10.138.0.3
+nfdc route add / udp://10.138.0.3
 
 REPO
 
-
-ndncatchunks -Dv -r -1 --fast-conv -r -1 -N typed  NAME
+ndncatchunks -Dv -p aimd -r -1 -N typed NAME > FILE
+ndnputchunks -N typed NAME < FILE
 
 /CORBIN/SIZEFILES/KB-500
 curl -L ftp://ndn-fserv/home/corbin/sizefiles/KB_500.bin -o KB_500_FILE
