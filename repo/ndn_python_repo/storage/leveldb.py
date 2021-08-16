@@ -1,7 +1,6 @@
 import os
 import pickle
 import plyvel
-import time
 from .storage_base import Storage
 from typing import List, Optional
 
@@ -20,7 +19,7 @@ class LevelDBStorage(Storage):
             try:
                 os.makedirs(db_dir)
             except PermissionError:
-                raise PermissionError(f'Could not create database directory: {db_dir}') from None
+                raise PermissionError(f'Could not create database directory: {db_path}') from None
         self.db = plyvel.DB(db_dir, create_if_missing=True)
 
     def _put(self, key: bytes, value: bytes, expire_time_ms: int=None):

@@ -36,15 +36,15 @@ class WriteCommandHandle(CommandHandle):
         Register routes for command interests.
         This function needs to be called explicitly after initialization.
 
-        :param perfix: NonStrictName. The name prefix to listen on.
+        :param prefix: NonStrictName. The name prefix to listen on.
         """
         self.prefix = prefix
 
         # subscribe to insert messages
         self.pb.subscribe(self.prefix + ['insert'], self._on_insert_msg)
 
-        # start to announce process status
-        await self._schedule_announce_process_status(period=3)
+        # listen on insert check interests
+        self.app.route(self.prefix + ['insert check'])(self._on_check_interest)
 
     def _on_insert_msg(self, msg):
         try:
@@ -79,21 +79,20 @@ class WriteCommandHandle(CommandHandle):
         except AttributeError:
             return
 
-        logging.info(f'Write handle processing insert command: {Name.to_str(name)}, {start_block_id}, {end_block_id}')
+        logging.info(f'Write handle processing insert command: {Name.to_str(name)}, first block: {start_block_id}, last block: {end_block_id}')
 
         # rejects any data that overlaps with repo's own namespace
         if Name.is_prefix(self.prefix, name) or Name.is_prefix(name, self.prefix):
             logging.warning('Inserted data name overlaps with repo prefix')
             return
-        elif self.is_valid_param(cmd_param) == False:
-            logging.warning('Insert command malformed: only end_block_id is specified')
+        elif self.normalize_params_or_reject(cmd_param) == False:
+            logging.warning('Insert command malformed')
             return
 
         # Reply to client with status code 100
-        self.m_process_id_to_status[process_id] = RepoCommandResponse()
-        self.m_process_id_to_status[process_id].process_id = process_id
-        self.m_process_id_to_status[process_id].insert_num = 0
-        self.m_process_id_to_check_prefix[process_id] = check_prefix
+        self.m_processes[process_id] = RepoCommandResponse()
+        self.m_processes[process_id].process_id = process_id
+        self.m_processes[process_id].insert_num = 0
 
         # Remember the prefixes to register
         if register_prefix:
@@ -106,7 +105,7 @@ class WriteCommandHandle(CommandHandle):
         CommandHandle.add_inserted_filename_in_storage(self.storage, name)
 
         # Start data fetching process
-        self.m_process_id_to_status[process_id].status_code = 300
+        self.m_processes[process_id].status_code = 300
         insert_num = 0
         is_success = False
         if start_block_id != None:
@@ -121,30 +120,39 @@ class WriteCommandHandle(CommandHandle):
                 is_success = True
 
         if is_success:
-            self.m_process_id_to_status[process_id].status_code = 200
+            self.m_processes[process_id].status_code = 200
             logging.info('Insertion success, {} items inserted'.format(insert_num))
         else:
-            self.m_process_id_to_status[process_id].status_code = 400
+            self.m_processes[process_id].status_code = 400
             logging.info('Insertion failure, {} items inserted'.format(insert_num))
-        self.m_process_id_to_status[process_id].insert_num = insert_num
+        self.m_processes[process_id].insert_num = insert_num
 
         # Delete process state after some time
         await self._delete_process_state_after(process_id, 60)
 
-    def is_valid_param(self, cmd_param):
+    def normalize_params_or_reject(self, cmd_param):
         """
-        Validate insert parameter.
+        Normalize insert parameter, or reject the param if it's invalid.
         :param cmd_param: RepoCommandParameter.
-        :return: Is valid param.
+        :return: Returns true if cmd_param is valid.
         """
         start_block_id = cmd_param.start_block_id
         end_block_id = cmd_param.end_block_id
-        # can't have start_block_id not specified, but end_block_id specified
-        if start_block_id == None and end_block_id != None:
-            return False
-        elif start_block_id != None and end_block_id != None:
-            if start_block_id > end_block_id:
-                return False
+
+        # Valid if neither start_block_id or end_block_id is given, fetch single data without seg number
+        if start_block_id == None and end_block_id == None:
+            return True
+
+        # If start_block_id is not given, it is set to 0
+        if start_block_id == None:
+            cmd_param.start_block_id = 0
+
+        # Valid if end_block_id is not given, attempt to fetch all segments until receiving timeout
+        # Valid if end_block_id is given, and larger than or equal to start_block_id
+        if end_block_id == None or end_block_id >= start_block_id:
+            return True
+        
+        return False
 
     async def fetch_single_data(self, name: NonStrictName, forwarding_hint: Optional[NonStrictName]):
         """
