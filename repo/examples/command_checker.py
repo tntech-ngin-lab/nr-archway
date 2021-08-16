@@ -15,7 +15,6 @@ import sys
 sys.path.insert(0,'..')
 from ndn_python_repo.clients import CommandChecker
 
-
 async def run_check(app: NDNApp, **kwargs):
     """
     Async helper function to run the CommandChecker.
@@ -27,7 +26,6 @@ async def run_check(app: NDNApp, **kwargs):
         status_code = response.status_code
         print('Status Code: {}'.format(status_code))
     app.shutdown()
-
 
 def main():
     parser = argparse.ArgumentParser(description='segmented insert client')
@@ -43,13 +41,11 @@ def main():
 
     app = NDNApp()
     try:
-        app.run_forever(
-            after_start=run_check(app,
-                                repo_name=Name.from_str(args.repo_name),
-                                process_id=int(args.process_id)))
+        app.run_forever(after_start=run_check(app,
+                                        repo_name=Name.from_str(args.repo_name),
+                                        process_id=int(args.process_id)))
     except FileNotFoundError:
         print('Error: could not connect to NFD.')
-
 
 if __name__ == '__main__':
     main()
