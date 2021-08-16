@@ -17,15 +17,7 @@ sys.path.insert(0,'..')
 from ndn_python_repo.clients import PutfileClient, DeleteClient
 
 class ReadHandle(object):
-    """
-    ReadCommandHandle processes ordinary interests, and return corresponding data if exists.
-    """
     def __init__(self, app: NDNApp, storage: Storage, config: dict):
-        """
-        :param app: NDNApp.
-        :param storage: Storage.
-        TODO: determine which prefix to listen on.
-        """
         self.app = app
         self.storage = storage
         self.register_root = config['repo_config']['register_root']
@@ -36,16 +28,9 @@ class ReadHandle(object):
         if self.register_root:
             self.listen(Name.from_str('/'))
     def listen(self, prefix):
-        """
-        This function needs to be called for prefix of all data stored.
-        :param prefix: NonStrictName.
-        """
         self.app.route(prefix)(self._on_interest)
         logging.info(f'Read handle: listening to {Name.to_str(prefix)}')
     def unlisten(self, prefix):
-        """
-        :param name: NonStrictName.
-        """
         aio.ensure_future(self.app.unregister(prefix))
         logging.info(f'Read handle: stop listening to {Name.to_str(prefix)}')
     async def _request_from_catalog(self, int_name):
