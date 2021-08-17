@@ -1,7 +1,6 @@
 from typing import Optional
 from ndn.app import NDNApp
-from ndn.encoding import Name, Component, InterestParam, BinaryStr, FormalName, MetaInfo
-from bidirdict import BidirDict
+from ndn.encoding import Name, InterestParam, BinaryStr, FormalName, MetaInfo
 import logging
 import pandas as pd
 import sys

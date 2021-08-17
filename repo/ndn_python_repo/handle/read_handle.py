@@ -7,6 +7,7 @@ import os
 import random
 import mmap
 import contextlib
+import threading
 from ndn.app import NDNApp
 from ndn.types import InterestNack, InterestTimeout, InterestCanceled, ValidationFailure
 from ndn.encoding import Name, Component, InterestParam, tlv_var
@@ -44,7 +45,7 @@ class ReadHandle(object):
                 logging.info(f'Read handle: content received: {bytes(content).decode()}')
             else:
                 logging.info(f'Read handle: content received: None')
-            clist = list(content.split(","))
+            clist = bytes(content).decode().split(",")
             if len(clist) != 5:
                 return None
             translation = {}
@@ -66,7 +67,21 @@ class ReadHandle(object):
             logging.warning(f'Unknown Error has Occured: {e}')
         return None
     async def _stream_file_to_repo(self, int_name, translation):
-        pass
+        return False
+    def _file_thread(self, int_name, int_param, _app_param):
+        logging.info(f'Thread started for {Name.to_str(int_name)}')
+        aio.run(self._file_thread_helper(int_name, int_param, _app_param))
+    async def _file_thread_helper(self, int_name, int_param, _app_param):
+        logging.info(f'Inside Thread Helper for {Name.to_str(int_name)}')
+        translation = await self._request_from_catalog(int_name[:-1])
+        if translation != None:
+            logging.info(f'Translation: {translation}')
+            status = await self._stream_file_to_repo(int_name, translation)
+            if status == False:
+                self.failed_requests.append(Name.to_str(int_name[:-1]))
+        else:
+            self.failed_requests.append(Name.to_str(int_name[:-1]))
+        self.curr_file_requests.remove(Name.to_str(int_name[:-1]))
     def _on_interest(self, int_name, int_param, _app_param):
         logging.info(f'On interest: {Name.to_str(int_name)}')
         aio.get_event_loop().create_task(self._on_interest_helper(int_name, int_param, _app_param))
@@ -86,15 +101,10 @@ class ReadHandle(object):
                         self.app.put_data(int_name, content=None, content_type=ContentType.NACK)
                         return
                     else:
-                        # start thread instead
-                        self.curr_file_requests.append(Name.to_str(int_name[:-1]))
-                        translation = await self._request_from_catalog(int_name[:-1])
-                        if translation != None:
-                            status = await self._stream_file_to_repo(int_name, translation)
-                            if status == False:
-                                self.failed_requests.append(Name.to_str(int_name[:-1]))
-                                #delete all packets from storage
-                        else:
+                        if len(self.curr_file_requests) >= self.curr_requests_limit:
                             self.failed_requests.append(Name.to_str(int_name[:-1]))
-                        self.curr_file_requests.remove(Name.to_str(int_name[:-1]))
+                        else:
+                            self.curr_file_requests.append(Name.to_str(int_name[:-1]))
+                            thread = threading.Thread(target=self._file_thread, args=(int_name, int_param, _app_param,))
+                            thread.start()
             await aio.sleep(0.1)
