@@ -80,20 +80,21 @@ class ReadHandle(object):
                 self.app.put_raw_packet(data_bytes)
                 return
             else:
-                if Name.to_str(int_name[:-1]) in self.failed_requests:
-                    logging.info(f'Read handle: No Data, No translation for {Component.to_str(int_name[-1])}')
-                    self.app.put_data(int_name, content=None, content_type=ContentType.NACK)
-                    return
-                # start thread
                 if Name.to_str(int_name[:-1]) not in self.curr_file_requests:
-                    self.curr_file_requests.append(Name.to_str(int_name[:-1]))
-                    translation = await self._request_from_catalog(int_name[:-1])
-                    if translation != None:
-                        status = await self._stream_file_to_repo(int_name, translation)
-                        if status == False:
-                            self.failed_requests.append(Name.to_str(int_name[:-1]))
-                            #delete all packets from storage
+                    if Name.to_str(int_name[:-1]) in self.failed_requests:
+                        logging.info(f'Read handle: No Data, No translation for {Component.to_str(int_name[-1])}')
+                        self.app.put_data(int_name, content=None, content_type=ContentType.NACK)
+                        return
                     else:
-                        self.failed_requests.append(Name.to_str(int_name[:-1]))
-                    self.curr_file_requests.remove(Name.to_str(int_name[:-1]))
+                        # start thread instead
+                        self.curr_file_requests.append(Name.to_str(int_name[:-1]))
+                        translation = await self._request_from_catalog(int_name[:-1])
+                        if translation != None:
+                            status = await self._stream_file_to_repo(int_name, translation)
+                            if status == False:
+                                self.failed_requests.append(Name.to_str(int_name[:-1]))
+                                #delete all packets from storage
+                        else:
+                            self.failed_requests.append(Name.to_str(int_name[:-1]))
+                        self.curr_file_requests.remove(Name.to_str(int_name[:-1]))
             await aio.sleep(0.1)
