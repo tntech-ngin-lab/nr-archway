@@ -67,6 +67,20 @@ class ReadHandle(object):
             logging.warning(f'Unknown Error has Occured: {e}')
         return None
     async def _stream_file_to_repo(self, int_name, translation):
+        if translation["interface"] == "ndn":
+            pass
+        elif translation["interface"] == "sftp":
+            pass
+        elif translation["interface"] == "ftp":
+            pass
+        elif translation["interface"] == "aspera":
+            pass
+        elif translation["interface"] == "http":
+            pass
+        elif translation["interface"] == "https":
+            pass
+        else
+            pass
         return False
     def _file_thread(self, int_name, int_param, _app_param):
         logging.info(f'Thread started for {Name.to_str(int_name)}')
