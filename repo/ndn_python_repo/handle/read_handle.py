@@ -23,7 +23,8 @@ class ReadHandle(object):
         self.register_root = config['repo_config']['register_root']
         self.repo_name = config['repo_config']['repo_name']
         self.curr_file_requests = []
-        self.failed_translations = []
+        self.failed_requests = []
+        self.curr_requests_limit = 2 # number of threads or can fill requests
         self.segment_size = 8000
         if self.register_root:
             self.listen(Name.from_str('/'))
@@ -71,20 +72,28 @@ class ReadHandle(object):
         aio.get_event_loop().create_task(self._on_interest_helper(int_name, int_param, _app_param))
     async def _on_interest_helper(self, int_name, int_param, _app_param):
         if int_param.must_be_fresh: return
-        data_bytes = self.storage.get_data_packet(int_name, int_param.can_be_prefix)
-
-        if data_bytes:
-            logging.info(f'Read handle: Found Data for {Component.to_str(int_name[-1])}')
-            self.app.put_raw_packet(data_bytes)
-            return
-        if data_bytes==None:
-            logging.info(f'Read handle: No Data for {Component.to_str(int_name[-1])}')
-            self.app.put_data(int_name, content=None, content_type=ContentType.NACK)
-            if Name.to_str(int_name[:-1]) not in self.curr_file_requests:
-                self.curr_file_requests.append(Name.to_str(int_name[:-1]))
-                translation = await self._request_from_catalog(int_name[:-1])
-                if translation != None:
-                    await self._stream_file_to_repo(int_name, translation)
-                else:
-                    pass # nack the client
-                self.curr_file_requests.remove(Name.to_str(int_name[:-1]))
+        data_bytes = None
+        while True:
+            data_bytes = self.storage.get_data_packet(int_name, int_param.can_be_prefix)
+            if data_bytes:
+                logging.info(f'Read handle: Found Data for {Component.to_str(int_name[-1])}')
+                self.app.put_raw_packet(data_bytes)
+                return
+            else:
+                if Name.to_str(int_name[:-1]) in self.failed_requests:
+                    logging.info(f'Read handle: No Data, No translation for {Component.to_str(int_name[-1])}')
+                    self.app.put_data(int_name, content=None, content_type=ContentType.NACK)
+                    return
+                # start thread
+                if Name.to_str(int_name[:-1]) not in self.curr_file_requests:
+                    self.curr_file_requests.append(Name.to_str(int_name[:-1]))
+                    translation = await self._request_from_catalog(int_name[:-1])
+                    if translation != None:
+                        status = await self._stream_file_to_repo(int_name, translation)
+                        if status == False:
+                            self.failed_requests.append(Name.to_str(int_name[:-1]))
+                            #delete all packets from storage
+                    else:
+                        self.failed_requests.append(Name.to_str(int_name[:-1]))
+                    self.curr_file_requests.remove(Name.to_str(int_name[:-1]))
+            await aio.sleep(0.1)
