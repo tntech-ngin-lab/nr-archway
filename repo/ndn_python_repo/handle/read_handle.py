@@ -1,19 +1,12 @@
 import asyncio as aio
 import logging
 import ndn.utils
-import subprocess
-import sys
-import os
-import random
-import mmap
+import sys, os
 from ftplib import FTP
-import contextlib
 import threading
 from ndn.app import NDNApp
 from ndn.types import InterestNack, InterestTimeout, InterestCanceled, ValidationFailure
-from ndn.encoding import Name, Component, InterestParam, tlv_var
-from ndn.encoding import parse_network_nack, parse_interest, parse_data, make_network_nack, make_interest, NackReason
-from ndn.encoding import make_data, MetaInfo, ContentType
+from ndn.encoding import Name, Component, InterestParam, MetaInfo, ContentType
 from ..storage import Storage
 sys.path.insert(0,'..')
 from ndn_python_repo.clients import PutfileClient, DeleteClient
@@ -28,6 +21,7 @@ class ReadHandle(object):
         self.failed_requests = []
         self.past_requests = []
         self.storage_queue = []
+        self.share_data_task = aio.create_task(self._share_thread_data())
         self.curr_requests_limit = 2 # number of threads or can fill requests
         self.segment_size = 8000
         if self.register_root:
@@ -38,6 +32,13 @@ class ReadHandle(object):
     def unlisten(self, prefix):
         aio.ensure_future(self.app.unregister(prefix))
         logging.info(f'Read handle: stop listening to {Name.to_str(prefix)}')
+    async def _share_thread_data(self):
+        while True:
+            for idx, val in enumerate(self.storage_queue):
+                data_packet = self.app.prepare_data(val["name"], val["bytes"], meta_info=val["meta"])
+                self.storage.put_data_packet(val["name"], data_packet)
+                self.storage_queue.remove(val)
+            await aio.sleep(0.01)
     async def _request_from_catalog(self, int_name):
         try:
             name = Name.from_str('/catalog') + int_name
@@ -93,8 +94,6 @@ class ReadHandle(object):
             temp_item["name"] = int_name + [Component.from_number(packet_number, Component.TYPE_SEGMENT)]
             temp_item["bytes"] = byte_chunk
             temp_item["meta"] = mi
-            #data_packet = self.app.prepare_data(name, byte_chunk, meta_info=mi)
-            #self.storage.put_data_packet(name, data_packet)
             self.storage_queue.append(temp_item)
             packet_number = packet_number + 1
 
@@ -165,9 +164,5 @@ class ReadHandle(object):
                                 self.curr_file_requests.append(Name.to_str(int_name[:-1]))
                                 thread = threading.Thread(target=self._file_thread, args=(int_name, int_param, _app_param,))
                                 thread.start()
-            for idx, val in enumerate(self.storage_queue):
-                data_packet = self.app.prepare_data(val["name"], val["bytes"], meta_info=val["meta"])
-                self.storage.put_data_packet(val["name"], data_packet)
-                self.storage_queue.remove(val)
             await aio.sleep(0)
         logging.info(f'Read handle: Served Data {Name.to_str(int_name)}')
