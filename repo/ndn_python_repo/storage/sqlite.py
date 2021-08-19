@@ -20,7 +20,7 @@ class SqliteStorage(Storage):
             except PermissionError:
                 raise PermissionError(f'Could not create database directory: {db_path}') from None
 
-        self.conn = sqlite3.connect(os.path.expanduser(db_path))
+        self.conn = sqlite3.connect(os.path.expanduser(db_path), check_same_thread=False)
         c = self.conn.cursor()
         c.execute("""
             CREATE TABLE IF NOT EXISTS data (

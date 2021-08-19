@@ -1,6 +1,6 @@
 from typing import Optional
 from ndn.app import NDNApp
-from ndn.encoding import Name, InterestParam, BinaryStr, FormalName, MetaInfo
+from ndn.encoding import Name, InterestParam, BinaryStr, FormalName, MetaInfo, make_data
 import logging
 import pandas as pd
 import sys
@@ -27,7 +27,8 @@ def on_interest(name: FormalName, param: InterestParam, app_param: Optional[Bina
     print(f'\tTranslating {Name.to_str(name[1:])}')
     s = table.get(Name.to_str(name[1:]))
     content = str(s).encode() if s else None
-    app.put_data(name, content=content, freshness_period=500, final_block_id=None)
+    data_packet = app.prepare_data(name, content, meta_info=MetaInfo(freshness_period=500, final_block_id=None))
+    app.put_raw_packet(data_packet)
     print(f'<< D: {Name.to_str(name)}')
     print(f'\t{MetaInfo(freshness_period=500, final_block_id=None)}')
     print(f'\tContent: {s}\n')
