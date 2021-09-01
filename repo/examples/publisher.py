@@ -15,7 +15,6 @@ import sys
 sys.path.insert(0,'..')
 from ndn_python_repo.utils import PubSub
 
-
 async def run_publisher(app: NDNApp, publisher_prefix: NonStrictName):
     pb = PubSub(app, publisher_prefix)
     await pb.wait_for_ready()
@@ -27,7 +26,6 @@ async def run_publisher(app: NDNApp, publisher_prefix: NonStrictName):
     # wait for msg to be fetched by subsciber
     await aio.sleep(10)
     app.shutdown()
-
 
 def main():
     logging.basicConfig(format='[%(asctime)s]%(levelname)s:%(message)s',
@@ -42,7 +40,6 @@ def main():
             after_start=run_publisher(app, publisher_prefix))
     except FileNotFoundError:
         logging.warning('Error: could not connect to NFD')
-
 
 if __name__ == '__main__':
     main()

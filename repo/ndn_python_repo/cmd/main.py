@@ -2,11 +2,9 @@ import argparse
 import asyncio as aio
 import logging
 import pkg_resources
+import sys
 from ndn.app import NDNApp
 from ndn.encoding import Name
-import sys
-
-sys.path.insert(0,'../..')
 from ndn_python_repo import *
 
 
@@ -26,7 +24,7 @@ def process_cmd_opts():
         parser.add_argument('-c', '--config',
                             help='path to config file')
         parser.add_argument('-r', '--repo_name',
-                            help="""repo's routable prefix. If this option is specified, it
+                            help="""repo's routable prefix. If this option is specified, it 
                                     overrides the prefix in the config file""")
         args = parser.parse_args()
         return args
@@ -62,7 +60,7 @@ def config_logging(config: dict):
         log_level = logging.INFO
     else:
         log_level = log_levels[config['level']]
-
+    
     # default is stdout
     log_file = config['file'] if 'file' in config else None
 
@@ -77,16 +75,8 @@ def config_logging(config: dict):
                             level=log_level)
 
 
-def main() -> int:
-    cmdline_args = process_cmd_opts()
-    config = process_config(cmdline_args)
-    print(config)
-
-    config_logging(config['logging_config'])
-
+async def async_main(app: NDNApp, config):
     storage = create_storage(config['db_config'])
-
-    app = NDNApp()
 
     pb = PubSub(app)
     read_handle = ReadHandle(app, storage, config)
@@ -95,10 +85,19 @@ def main() -> int:
     tcp_bulk_insert_handle = TcpBulkInsertHandle(storage, read_handle, config)
 
     repo = Repo(app, storage, read_handle, write_handle, delete_handle, tcp_bulk_insert_handle, config)
-    aio.ensure_future(repo.listen())
+    await repo.listen()
 
+
+def main() -> int:
+    cmdline_args = process_cmd_opts()
+    config = process_config(cmdline_args)
+    print(config)
+
+    config_logging(config['logging_config'])
+
+    app = NDNApp()
     try:
-        app.run_forever()
+        app.run_forever(after_start=async_main(app, config))
     except FileNotFoundError:
         print('Error: could not connect to NFD.')
     return 0

@@ -16,7 +16,6 @@ import sys
 sys.path.insert(0,'..')
 from ndn_python_repo.clients import GetfileClient
 
-
 async def run_getfile_client(app: NDNApp, **kwargs):
     """
     Async helper function to run the GetfileClient.
@@ -25,7 +24,6 @@ async def run_getfile_client(app: NDNApp, **kwargs):
     client = GetfileClient(app, kwargs['repo_name'])
     await client.fetch_file(kwargs['name_at_repo'])
     app.shutdown()
-
 
 def main():
     parser = argparse.ArgumentParser(description='getfile')
@@ -50,7 +48,6 @@ def main():
         print('Error: could not connect to NFD.')
 
     print(f'Total time: {time.time() - start} seconds')
-
 
 if __name__ == '__main__':
     main()

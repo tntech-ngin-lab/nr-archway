@@ -8,12 +8,11 @@
 
 import asyncio as aio
 import logging
-import sys
 from ndn.app import NDNApp
 from ndn.encoding import Name, NonStrictName
+import sys
 sys.path.insert(0,'..')
 from ndn_python_repo.utils import PubSub
-
 
 async def run_subscriber(app: NDNApp, subscriber_prefix: NonStrictName):
     pb = PubSub(app, subscriber_prefix)
@@ -22,10 +21,8 @@ async def run_subscriber(app: NDNApp, subscriber_prefix: NonStrictName):
     topic = Name.from_str('/topic_foo')
     pb.subscribe(topic, foo_cb)
 
-
 def foo_cb(msg: bytes):
     print(f'topic /topic_foo received msg: {msg.decode()}')
-
 
 def main():
     logging.basicConfig(format='[%(asctime)s]%(levelname)s:%(message)s',
@@ -40,7 +37,6 @@ def main():
             after_start=run_subscriber(app, subscriber_prefix))
     except FileNotFoundError:
         logging.warning('Error: could not connect to NFD')
-
 
 if __name__ == '__main__':
     main()

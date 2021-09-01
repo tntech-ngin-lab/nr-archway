@@ -17,7 +17,6 @@ sys.path.insert(0,'..')
 from ndn_python_repo.clients import PutfileClient
 import uuid
 
-
 async def run_putfile_client(app: NDNApp, **kwargs):
     """
     Async helper function to run the PutfileClient.
@@ -26,15 +25,19 @@ async def run_putfile_client(app: NDNApp, **kwargs):
     client = PutfileClient(app=app,
                            prefix=kwargs['client_prefix'],
                            repo_name=kwargs['repo_name'])
+    # Set pubsub to register ``check_prefix`` directly, so all prefixes under ``check_prefix`` will
+    # be handled with interest filters. This reduces the number of registered prefixes at NFD, when
+    # inserting multiple files with one client
+    check_prefix = kwargs['client_prefix']
     await client.insert_file(file_path=kwargs['file_path'],
                              name_at_repo=kwargs['name_at_repo'],
                              segment_size=kwargs['segment_size'],
                              freshness_period=kwargs['freshness_period'],
                              cpu_count=kwargs['cpu_count'],
                              forwarding_hint=kwargs['forwarding_hint'],
-                             register_prefix=kwargs['register_prefix'])
+                             register_prefix=kwargs['register_prefix'],
+                             check_prefix=check_prefix)
     app.shutdown()
-
 
 def main():
     parser = argparse.ArgumentParser(description='putfile')
@@ -88,7 +91,6 @@ def main():
                                            register_prefix=args.register_prefix))
     except FileNotFoundError:
         print('Error: could not connect to NFD.')
-
 
 if __name__ == '__main__':
     main()

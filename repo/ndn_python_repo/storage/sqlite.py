@@ -1,6 +1,5 @@
 import os
 import sqlite3
-import time
 from typing import List, Optional
 from .storage_base import Storage
 
@@ -21,7 +20,7 @@ class SqliteStorage(Storage):
             except PermissionError:
                 raise PermissionError(f'Could not create database directory: {db_path}') from None
 
-        self.conn = sqlite3.connect(os.path.expanduser(db_path))
+        self.conn = sqlite3.connect(os.path.expanduser(db_path), check_same_thread=False)
         c = self.conn.cursor()
         c.execute("""
             CREATE TABLE IF NOT EXISTS data (
@@ -71,7 +70,7 @@ class SqliteStorage(Storage):
         c = self.conn.cursor()
         query = 'SELECT value FROM data WHERE '
         if must_be_fresh:
-            query += f'(expire_time_ms > {time.time_ms()}) AND '
+            query += f'(expire_time_ms > {time_ms()}) AND '
         if can_be_prefix:
             query += 'hex(key) LIKE ?'
             c.execute(query, (key.hex() + '%', ))

@@ -1,9 +1,14 @@
-nr-archway: A bridge between NDN and IP
-==========
+nr-archway: A Bridge to Scientific Data Repositories
+====================================================
 
-This is a Small Named Data Networking Network consisting of a Repo and a Catalog implemented in python. It is designed to conjoin two architectures, the future proposed architecture NDN with the current architecture IP. It's main object is to show how NDN could be utilized in a practical sense and start being used in the consumer market.
+nr-archway's introduction, design, and goals are included in this [paper]().
 
-nr-archway uses the [python-ndn](https://github.com/named-data/python-ndn) library and the [python-ndn-repo](https://github.com/UCLA-IRL/ndn-python-repo) for it's implementation. All credit for the repo itself and the python ndn API should be rightfully given to the correct authors.
+nr-archway is a NDN protocol built as a solution to connect different-interface, existing repositories for scientific communities. This protocol can be used beyond this initial use however.
+
+nr-archway consist of 4 parts: client(s), (NDN) repo, (NDN) catalog, and existing IP/NDN repo(s).
+It is designed by conjoining two architectures, the future proposed architecture NDN with the current architecture IP.
+
+nr-archway uses the [python-ndn](https://github.com/named-data/python-ndn) library and the [python-ndn-repo](https://github.com/UCLA-IRL/ndn-python-repo) for it's implementation. All credit for the python-ndn-repo itself and the python-ndn API should be rightfully given to the correct authors.
 
 ## Installation
 
@@ -12,6 +17,8 @@ nr-archway uses the [python-ndn](https://github.com/named-data/python-ndn) libra
 * [python-ndn](https://python-ndn.readthedocs.io/en/latest/src/installation.html)
 
 * [nfd](https://named-data.net/doc/NFD/0.5.0/INSTALL.html)
+
+## Environment Steps
 
 ### Examples
 
@@ -54,7 +61,6 @@ To compare this architecture, you can use the following script:
 
 nr-archway is an open source project that is licensed. See [`LICENSE.md`](LICENSE.md) for more information.
 
-The Names of all authors associated with this project (excluding the ndn repo implementation and the ndn api) are below:
+The Names of all authors associated with this project (excluding the [python-ndn-repo](https://github.com/UCLA-IRL/ndn-python-repo) implementation and the [python-ndn](https://github.com/named-data/python-ndn) library) are below:
 
   * *Justin C Presley* (justincpresley)
-
