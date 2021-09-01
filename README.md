@@ -22,11 +22,9 @@ nr-archway uses the [python-ndn](https://github.com/named-data/python-ndn) libra
 
 ### Examples
 
-There are different branches associated to this repository. The different branches correspond to the different methods of file transferring.
+Available Interfaces:
 
-Methods:
-
-* [sftp](https://github.com/justincpresley/ndn-python-fserver/tree/sftp)
+* ftp
 
 There are 3 parts to this small NDN network The catalog, the repo, and the client. All need to have each other's
 public key. Also, fill out the ssh_config with the appropriate address of the file server and add that naming to the repo's config before continuing.
