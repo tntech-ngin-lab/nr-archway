@@ -1,0 +1,7 @@
+some_cmd > some_file 2>&1 &
+
+nfdc face create udp://REPO_IP
+nfdc route add / udp://REPO_IP
+
+ndncatchunks -Dv -p aimd -r -1 -N typed NAME > FILE
+ndnputchunks -N typed NAME < FILE
