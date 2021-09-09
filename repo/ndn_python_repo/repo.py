@@ -5,7 +5,6 @@ from ndn.encoding import Name
 from .storage import *
 from .handle import *
 
-
 class Repo(object):
     def __init__(self, app: NDNApp, storage: Storage, read_handle: ReadHandle,
                  write_handle: WriteCommandHandle, delete_handle: DeleteCommandHandle,
@@ -20,7 +19,6 @@ class Repo(object):
         self.read_handle = read_handle
         self.delete_handle = delete_handle
         self.tcp_bulk_insert_handle = tcp_bulk_insert_handle
-
         self.running = True
         self.register_root = config['repo_config']['register_root']
 
