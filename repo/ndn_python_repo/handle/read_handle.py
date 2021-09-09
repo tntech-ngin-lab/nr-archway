@@ -15,11 +15,11 @@ class ReadHandle(object):
     def __init__(self, app: NDNApp, storage: Storage, config: dict):
         self.app = app
         self.storage = storage
-        self.db_config = config["db_config"]
-        self.register_root = config['repo_config']['register_root']
+        self.config = config
         self.curr_file_requests = []
         self.curr_requests_limit = 2 # number of threads or can fill requests
         self.segment_size = 8000
+        self.register_root = config['repo_config']['register_root']
         if self.register_root:
             self.listen(Name.from_str('/'))
     def listen(self, prefix):
@@ -78,10 +78,10 @@ class ReadHandle(object):
 
         packet_number = 0
         def handle_ftp_binary(byte_chunk):
-            nonlocal packet_number, mi, thread_storage
+            nonlocal packet_number, mi
             data_packet = self.app.prepare_data(int_name + [Component.from_number(packet_number, Component.TYPE_SEGMENT)], byte_chunk, meta_info=mi)
             self.app.put_raw_packet(data_bytes)
-            thread_storage.put_data_packet(val["name"], data_packet)
+            thread_storage.put_data_packet(int_name + [Component.from_number(packet_number, Component.TYPE_SEGMENT)], data_packet)
             packet_number = packet_number + 1
 
         logging.info(f'Streaming the File Now')
@@ -117,8 +117,8 @@ class ReadHandle(object):
         logging.info(f'Inside Thread Helper for {Name.to_str(int_name)}')
         translation = await self._request_from_catalog(int_name[:-1])
         if translation != None:
-            thread_storage = create_storage(self.db_config)
             logging.info(f'Translation: {translation}')
+            thread_storage = create_storage(self.db_config)
             status = self._stream_file_to_repo(int_name[:-1], translation, thread_storage)
             if status == False:
                 # return Nack
