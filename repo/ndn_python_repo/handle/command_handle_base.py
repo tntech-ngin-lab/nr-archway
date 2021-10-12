@@ -90,11 +90,10 @@ class CommandHandle(object):
         name = Name.normalize(name)
         if name in names_msg.names:
             return True
-        else:
-            names_msg.names.append(name)
-            names_msg_bytes = names_msg.encode()
-            storage._put(set_name.encode('utf-8'), bytes(names_msg_bytes))
-            return False
+        names_msg.names.append(name)
+        names_msg_bytes = names_msg.encode()
+        storage._put(set_name.encode('utf-8'), bytes(names_msg_bytes))
+        return False
 
     @staticmethod
     def get_name_from_set_in_storage(set_name: str, storage: Storage) -> List[FormalName]:
