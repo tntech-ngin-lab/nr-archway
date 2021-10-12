@@ -7,14 +7,14 @@ from typing import List, Optional
 
 class LevelDBStorage(Storage):
 
-    def __init__(self, dir: str):
+    def __init__(self, directory: str):
         """
         Creates a LevelDB storage instance at disk location ``str``.
 
         :param dir: str. The disk location of the database directory.
         """
         super().__init__()
-        db_dir = os.path.expanduser(dir)
+        db_dir = os.path.expanduser(directory)
         if not os.path.exists(db_dir):
             try:
                 os.makedirs(db_dir)
