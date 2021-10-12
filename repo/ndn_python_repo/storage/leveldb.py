@@ -61,8 +61,7 @@ class LevelDBStorage(Storage):
             value, expire_time_ms = pickle.loads(record)
             if not must_be_fresh or expire_time_ms != None and expire_time_ms > int(time.time() * 1000):
                 return value
-            else:
-                return None
+            return None
         else:
             for _, v_e in self.db.iterator(prefix=key):
                 value, expire_time_ms = pickle.loads(v_e)
@@ -80,5 +79,4 @@ class LevelDBStorage(Storage):
         if self._get(key) != None:
             self.db.delete(key)
             return True
-        else:
-            return False
+        return False
