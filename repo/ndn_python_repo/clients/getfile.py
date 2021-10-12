@@ -20,15 +20,13 @@ class GetfileClient(object):
     """
     This client fetches a file from the repo, and save it to working directory.
     """
-    def __init__(self, app: NDNApp, repo_name):
+    def __init__(self, app: NDNApp):
         """
         A client to retrieve files from the remote repo.
 
         :param app: NDNApp.
-        :param repo_name: NonStrictName. Routable name to remote repo.
         """
         self.app = app
-        self.repo_name = repo_name
 
     async def fetch_file(self, name_at_repo: NonStrictName, local_filename: str = None, overwrite=False):
         """
@@ -49,7 +47,6 @@ class GetfileClient(object):
         # sense.
         if os.path.isfile(local_filename) and not overwrite:
             raise FileExistsError("{} already exists".format(local_filename))
-
 
         semaphore = aio.Semaphore(10)
         b_array = bytearray()

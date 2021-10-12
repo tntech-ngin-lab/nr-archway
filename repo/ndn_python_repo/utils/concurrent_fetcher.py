@@ -99,6 +99,7 @@ async def concurrent_fetcher(app: NDNApp, name: NonStrictName, start_block_id: i
         # Return if all data have been fetched, or the fetching process failed
         if recv_window == final_id:
             await aio.gather(*tasks)
+            return
         if is_failed:
             await aio.gather(*tasks)
             # New data may return during gather(), need to check again
@@ -106,3 +107,4 @@ async def concurrent_fetcher(app: NDNApp, name: NonStrictName, start_block_id: i
                 yield seq_to_data_packet[recv_window + 1]
                 del seq_to_data_packet[recv_window + 1]
                 recv_window += 1
+            return

@@ -7,7 +7,7 @@ import threading
 from ndn.app import NDNApp
 from ndn.types import InterestNack, InterestTimeout, InterestCanceled, ValidationFailure
 from ndn.encoding import Name, Component, InterestParam, MetaInfo, ContentType
-from ..storage import Storage
+from ..storage import Storage, create_storage
 sys.path.insert(0,'..')
 from ndn_python_repo.clients import PutfileClient, DeleteClient
 
@@ -20,6 +20,7 @@ class ReadHandle(object):
         self.curr_requests_limit = 2 # number of threads or can fill requests
         self.segment_size = 8000
         self.register_root = config['repo_config']['register_root']
+        self.db_config = config["db_config"]
         if self.register_root:
             self.listen(Name.from_str('/'))
     def listen(self, prefix):
@@ -120,8 +121,10 @@ class ReadHandle(object):
             thread_storage = create_storage(self.db_config)
             status = self._stream_file_to_repo(int_name[:-1], translation, thread_storage)
             if status == False:
+                pass
                 # return Nack
         else:
+            pass
             # return Nack
         self.curr_file_requests.remove(Name.to_str(int_name[:-1]))
     def _on_interest(self, int_name, int_param, _app_param):
@@ -134,7 +137,6 @@ class ReadHandle(object):
         if data_bytes:
             logging.info(f'Read handle: Found Data for {Component.to_str(int_name[-1])}')
             self.app.put_raw_packet(data_bytes)
-            break
         else:
             # add if there are too many requests currently
             if Name.to_str(int_name[:-1]) not in self.curr_file_requests:

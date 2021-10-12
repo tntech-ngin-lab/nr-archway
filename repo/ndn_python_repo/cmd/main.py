@@ -5,8 +5,8 @@ import pkg_resources
 import sys
 from ndn.app import NDNApp
 from ndn.encoding import Name
+sys.path.insert(0,'../..')
 from ndn_python_repo import *
-
 
 def process_cmd_opts():
     """
@@ -24,7 +24,7 @@ def process_cmd_opts():
         parser.add_argument('-c', '--config',
                             help='path to config file')
         parser.add_argument('-r', '--repo_name',
-                            help="""repo's routable prefix. If this option is specified, it 
+                            help="""repo's routable prefix. If this option is specified, it
                                     overrides the prefix in the config file""")
         args = parser.parse_args()
         return args
@@ -60,7 +60,7 @@ def config_logging(config: dict):
         log_level = logging.INFO
     else:
         log_level = log_levels[config['level']]
-    
+
     # default is stdout
     log_file = config['file'] if 'file' in config else None
 
