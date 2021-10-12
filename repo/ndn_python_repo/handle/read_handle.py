@@ -108,8 +108,7 @@ class ReadHandle(object):
             return self._stream_http_file(int_name, translation, thread_storage)
         elif translation["interface"] == "https":
             return self._stream_https_file(int_name, translation, thread_storage)
-        else:
-            return False
+        return False
     def _file_thread(self, int_name, int_param, _app_param):
         logging.info(f'Thread started for {Name.to_str(int_name)}')
         aio.run(self._file_thread_helper(int_name, int_param, _app_param))
@@ -129,7 +128,8 @@ class ReadHandle(object):
         logging.info(f'Read handle: On interest {Name.to_str(int_name)}')
         aio.get_event_loop().create_task(self._on_interest_helper(int_name, int_param, _app_param))
     async def _on_interest_helper(self, int_name, int_param, _app_param):
-        if int_param.must_be_fresh: return
+        if int_param.must_be_fresh:
+            return
         data_bytes = self.storage.get_data_packet(int_name, int_param.can_be_prefix)
         if data_bytes:
             logging.info(f'Read handle: Found Data for {Component.to_str(int_name[-1])}')
