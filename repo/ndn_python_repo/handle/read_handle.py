@@ -99,15 +99,15 @@ class ReadHandle(object):
     def _stream_file_to_repo(self, tapp, int_name, translation, thread_storage):
         if translation["interface"] == "ndn":
             return self._stream_ndn_file(tapp, int_name, translation, thread_storage)
-        elif translation["interface"] == "sftp":
+        if translation["interface"] == "sftp":
             return self._stream_sftp_file(tapp, int_name, translation, thread_storage)
-        elif translation["interface"] == "ftp":
+        if translation["interface"] == "ftp":
             return self._stream_ftp_file(tapp, int_name, translation, thread_storage)
-        elif translation["interface"] == "aspera":
+        if translation["interface"] == "aspera":
             return self._stream_aspera_file(tapp, int_name, translation, thread_storage)
-        elif translation["interface"] == "http":
+        if translation["interface"] == "http":
             return self._stream_http_file(tapp, int_name, translation, thread_storage)
-        elif translation["interface"] == "https":
+        if translation["interface"] == "https":
             return self._stream_https_file(tapp, int_name, translation, thread_storage)
         return False
     def _file_thread(self, int_name, int_param, _app_param):
