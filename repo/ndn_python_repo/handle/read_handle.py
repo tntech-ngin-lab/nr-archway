@@ -29,11 +29,11 @@ class ReadHandle(object):
     def unlisten(self, prefix):
         aio.ensure_future(self.app.unregister(prefix))
         logging.info(f'Read handle: stop listening to {Name.to_str(prefix)}')
-    async def _request_from_catalog(self, tapp, int_name):
+    async def _request_from_catalog(self, thread_app, int_name):
         try:
             name = Name.from_str('/catalog') + int_name
             logging.info(f'Read handle: sending interest to {Name.to_str(name)}')
-            ex_int_name, meta_info, content = await tapp.express_interest(name, must_be_fresh=True, can_be_prefix=False, lifetime=6000)
+            ex_int_name, meta_info, content = await thread_app.express_interest(name, must_be_fresh=True, can_be_prefix=False, lifetime=6000)
             logging.info(f'Read handle: received Data Name from {Name.to_str(ex_int_name)}')
             if content:
                 logging.info(f'Read handle: content received: {bytes(content).decode()}')
@@ -60,11 +60,11 @@ class ReadHandle(object):
         except Exception as e:
             logging.warning(f'Unknown Error has Occured: {e}')
         return None
-    def _stream_ndn_file(self, tapp, int_name, translation, thread_storage):
+    def _stream_ndn_file(self, thread_app, int_name, translation, thread_storage):
         return False
-    def _stream_sftp_file(self, tapp, int_name, translation, thread_storage):
+    def _stream_sftp_file(self, thread_app, int_name, translation, thread_storage):
         return False
-    def _stream_ftp_file(self, tapp, int_name, translation, thread_storage):
+    def _stream_ftp_file(self, thread_app, int_name, translation, thread_storage):
         if translation["host"] == "null" or translation["filename"] == "null":
             return False
         ftp = FTP(translation["host"], translation["username"] if translation["host"] != "null" else "anonymous", translation["password"] if translation["password"] != "null" else "")
@@ -80,8 +80,8 @@ class ReadHandle(object):
         packet_number = 0
         def handle_ftp_binary(byte_chunk):
             nonlocal packet_number, mi
-            data_packet = tapp.prepare_data(int_name + [Component.from_number(packet_number, Component.TYPE_SEGMENT)], byte_chunk, meta_info=mi)
-            tapp.put_raw_packet(data_packet)
+            data_packet = thread_app.prepare_data(int_name + [Component.from_number(packet_number, Component.TYPE_SEGMENT)], byte_chunk, meta_info=mi)
+            thread_app.put_raw_packet(data_packet)
             thread_storage.put_data_packet(int_name + [Component.from_number(packet_number, Component.TYPE_SEGMENT)], data_packet)
             packet_number = packet_number + 1
 
@@ -90,38 +90,38 @@ class ReadHandle(object):
         logging.info(f'Streaming Complete')
         ftp.quit()
         return True
-    def _stream_aspera_file(self, tapp, int_name, translation, thread_storage):
+    def _stream_aspera_file(self, thread_app, int_name, translation, thread_storage):
         return False
-    def _stream_http_file(self, tapp, int_name, translation, thread_storage):
+    def _stream_http_file(self, thread_app, int_name, translation, thread_storage):
         return False
-    def _stream_https_file(self, tapp, int_name, translation, thread_storage):
+    def _stream_https_file(self, thread_app, int_name, translation, thread_storage):
         return False
-    def _stream_file_to_repo(self, tapp, int_name, translation, thread_storage):
+    def _stream_file_to_repo(self, thread_app, int_name, translation, thread_storage):
         if translation["interface"] == "ndn":
-            return self._stream_ndn_file(tapp, int_name, translation, thread_storage)
+            return self._stream_ndn_file(thread_app, int_name, translation, thread_storage)
         if translation["interface"] == "sftp":
-            return self._stream_sftp_file(tapp, int_name, translation, thread_storage)
+            return self._stream_sftp_file(thread_app, int_name, translation, thread_storage)
         if translation["interface"] == "ftp":
-            return self._stream_ftp_file(tapp, int_name, translation, thread_storage)
+            return self._stream_ftp_file(thread_app, int_name, translation, thread_storage)
         if translation["interface"] == "aspera":
-            return self._stream_aspera_file(tapp, int_name, translation, thread_storage)
+            return self._stream_aspera_file(thread_app, int_name, translation, thread_storage)
         if translation["interface"] == "http":
-            return self._stream_http_file(tapp, int_name, translation, thread_storage)
+            return self._stream_http_file(thread_app, int_name, translation, thread_storage)
         if translation["interface"] == "https":
-            return self._stream_https_file(tapp, int_name, translation, thread_storage)
+            return self._stream_https_file(thread_app, int_name, translation, thread_storage)
         return False
     def _file_thread(self, int_name, int_param, _app_param):
         logging.info(f'Thread started for {Name.to_str(int_name)}')
         aio.set_event_loop(aio.new_event_loop())
-        tapp = NDNApp()
-        tapp.run_forever(after_start=self._file_thread_helper(tapp, int_name, int_param, _app_param))
-    async def _file_thread_helper(self, tapp, int_name, int_param, _app_param):
+        thread_app = NDNApp()
+        thread_app.run_forever(after_start=self._file_thread_helper(thread_app, int_name, int_param, _app_param))
+    async def _file_thread_helper(self, thread_app, int_name, int_param, _app_param):
         logging.info(f'Inside Thread Helper for {Name.to_str(int_name)}')
-        translation = await self._request_from_catalog(tapp, int_name[:-1])
+        translation = await self._request_from_catalog(thread_app, int_name[:-1])
         if translation != None:
             logging.info(f'Translation: {translation}')
             thread_storage = create_storage(self.db_config)
-            status = self._stream_file_to_repo(tapp, int_name[:-1], translation, thread_storage)
+            status = self._stream_file_to_repo(thread_app, int_name[:-1], translation, thread_storage)
             if status == False:
                 pass
                 # return Nack
@@ -129,7 +129,7 @@ class ReadHandle(object):
             pass
             # return Nack
         self.curr_file_requests.remove(Name.to_str(int_name[:-1]))
-        tapp.shutdown()
+        thread_app.shutdown()
     def _on_interest(self, int_name, int_param, _app_param):
         logging.info(f'Read handle: On interest {Name.to_str(int_name)}')
         aio.get_event_loop().create_task(self._on_interest_helper(int_name, int_param, _app_param))
