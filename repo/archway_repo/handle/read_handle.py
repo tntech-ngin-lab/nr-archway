@@ -9,7 +9,7 @@ from ndn.types import InterestNack, InterestTimeout, InterestCanceled, Validatio
 from ndn.encoding import Name, Component, InterestParam, MetaInfo, ContentType
 from ..storage import Storage, create_storage
 sys.path.insert(0,'..')
-from ndn_python_repo.clients import PutfileClient, DeleteClient
+from archway_repo.clients import PutfileClient, DeleteClient
 
 class ReadHandle(object):
     def __init__(self, app: NDNApp, storage: Storage, config: dict):

@@ -13,7 +13,7 @@ from ndn.encoding import Name
 from ndn.security import KeychainDigest
 import sys
 sys.path.insert(0,'..')
-from ndn_python_repo.clients import DeleteClient
+from archway_repo.clients import DeleteClient
 
 
 async def run_delete_client(app: NDNApp, **kwargs):

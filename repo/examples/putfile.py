@@ -14,7 +14,7 @@ from ndn.encoding import Name
 from ndn.security import KeychainDigest
 import sys
 sys.path.insert(0,'..')
-from ndn_python_repo.clients import PutfileClient
+from archway_repo.clients import PutfileClient
 import uuid
 
 async def run_putfile_client(app: NDNApp, **kwargs):

@@ -6,7 +6,7 @@ import sys
 from ndn.app import NDNApp
 from ndn.encoding import Name
 sys.path.insert(0,'../..')
-from ndn_python_repo import *
+from archway_repo import *
 
 def process_cmd_opts():
     """

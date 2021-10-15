@@ -13,7 +13,7 @@ from ndn.encoding import Name
 from ndn.security import KeychainDigest
 import sys
 sys.path.insert(0,'..')
-from ndn_python_repo.clients import CommandChecker
+from archway_repo.clients import CommandChecker
 
 async def run_check(app: NDNApp, **kwargs):
     """

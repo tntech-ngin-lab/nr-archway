@@ -12,7 +12,7 @@ from ndn.app import NDNApp
 from ndn.encoding import Name, NonStrictName
 import sys
 sys.path.insert(0,'..')
-from ndn_python_repo.utils import PubSub
+from archway_repo.utils import PubSub
 
 async def run_subscriber(app: NDNApp, subscriber_prefix: NonStrictName):
     pb = PubSub(app, subscriber_prefix)
