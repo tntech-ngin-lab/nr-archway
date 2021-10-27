@@ -15,7 +15,7 @@ def ftp_download(app, translation):
     info = open('file_name', 'wb')
 
     def handle_ftp_binary(byte_chunk):
-        nonlocal packet_number, mi
+        nonlocal packet_number
         info.write(byte_chunk)
         packet_number = packet_number + 1
 
