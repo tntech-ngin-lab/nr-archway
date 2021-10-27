@@ -3,7 +3,7 @@ import sys
 import time
 import logging
 
-def ftp_download(app, translation):
+def ftp_download(translation):
     ftp = FTP(translation["host"], translation["username"] if translation["host"] != "null" else "anonymous", translation["password"] if translation["password"] != "null" else "")
 
     size = ftp.size(translation["filename"])
@@ -24,9 +24,8 @@ def ftp_download(app, translation):
     logging.info(f'Streaming Complete')
     info.close()
     ftp.quit()
-    app.shutdown()
 
-def main(app) -> int:
+def main() -> int:
     logging.basicConfig(format='[%(asctime)s]%(levelname)s:%(message)s',
                         datefmt='%Y-%m-%d %H:%M:%S',
                         level=logging.INFO)
@@ -36,7 +35,7 @@ def main(app) -> int:
     translation["username"] = "guest"
     translation["password"] = "welcomehere"
     translation["filename"] = "/files/mbstest"
-    ftp_download(app, translation)
+    ftp_download(translation)
     print(f'Total time: {time.time() - start} seconds')
 
 if __name__ == "__main__":
