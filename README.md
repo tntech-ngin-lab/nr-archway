@@ -1,14 +1,14 @@
-nr-archway: A Bridge to Scientific Data Repositories
+ndn-archway: A Bridge to Scientific Data Repositories
 ====================================================
 
-nr-archway's introduction, design, and goals are included in this [paper]().
+ndn-archway's introduction, design, and goals are included in this [paper]().
 
-nr-archway is a NDN protocol built as a solution to connect different-interface, existing repositories for scientific communities. This protocol can be used beyond this initial use however.
+ndn-archway is a NDN protocol built as a solution to connect different-interface, existing repositories for scientific communities. This protocol can be used beyond this initial use however.
 
-nr-archway consist of 4 parts: client(s), (NDN) repo, (NDN) catalog, and existing IP/NDN repo(s).
+ndn-archway consist of 4 parts: client(s), (NDN) repo, (NDN) catalog, and existing IP/NDN repo(s).
 It is designed by conjoining two architectures, the future proposed architecture NDN with the current architecture IP.
 
-nr-archway uses the [python-ndn](https://github.com/named-data/python-ndn) library and the [python-ndn-repo](https://github.com/UCLA-IRL/ndn-python-repo) for it's implementation. All credit for the python-ndn-repo itself and the python-ndn API should be rightfully given to the correct authors.
+ndn-archway uses the [python-ndn](https://github.com/named-data/python-ndn) library and the [python-ndn-repo](https://github.com/UCLA-IRL/ndn-python-repo) for it's implementation. All credit for the python-ndn-repo itself and the python-ndn API should be rightfully given to the correct authors.
 
 ## Installation
 
