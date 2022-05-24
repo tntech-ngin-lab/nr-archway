@@ -16,8 +16,8 @@ df = pd.read_spss('table.sav')
 logging.info(f'NDN Catalog Startup')
 logging.info(f'Loading {len(df.index)} translations...')
 for i in range(len(df.index)):
-    logging.info(f"* translated {df.loc[i,'name']} = {df.loc[i,'interface']},{df.loc[i,'host']},{df.loc[i,'filename']},{df.loc[i,'username']},{df.loc[i,'password']}")
-    table[df.loc[i,'name']] = df.loc[i,'interface']+","+df.loc[i,'host']+","+df.loc[i,'filename']+","+df.loc[i,'username']+","+df.loc[i,'password']
+    logging.info(f"* translated {df.loc[i,'name']} = {df.loc[i,'interface']},{df.loc[i,'host']},{df.loc[i,'port']},{df.loc[i,'dataname']},{df.loc[i,'username']},{df.loc[i,'password']}")
+    table[df.loc[i,'name']] = df.loc[i,'interface']+","+df.loc[i,'host']+","+df.loc[i,'port']+","+df.loc[i,'dataname']+","+df.loc[i,'username']+","+df.loc[i,'password']
 logging.info(f'Loading Complete')
 
 @app.route('/catalog')

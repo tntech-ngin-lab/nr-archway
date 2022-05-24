@@ -40,14 +40,15 @@ class ReadHandle(object):
             else:
                 logging.info(f'Read handle: content received: None')
             clist = bytes(content).decode().split(",")
-            if len(clist) != 5:
+            if len(clist) != 6:
                 return None
             translation = {}
             translation["interface"] = clist[0] if clist[0]!="null" else None
             translation["host"] = clist[1] if clist[1]!="null" else None
-            translation["filename"] = clist[2] if clist[2]!="null" else None
-            translation["username"] = clist[3] if clist[3]!="null" else None
-            translation["password"] = clist[4] if clist[4]!="null" else None
+            translation["port"] = clist[2] if clist[2]!="null" else None
+            translation["dataname"] = clist[3] if clist[3]!="null" else None
+            translation["username"] = clist[4] if clist[4]!="null" else None
+            translation["password"] = clist[5] if clist[5]!="null" else None
             return translation
         except InterestNack as e:
             logging.warning(f'Nacked with reason={e.reason}')
